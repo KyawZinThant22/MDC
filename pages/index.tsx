@@ -1,10 +1,13 @@
+import AppHead from "@/components/AppHead";
+import Header from "@/components/Header";
 import type { NextPage } from "next";
 
 const Home: NextPage = () => {
   return (
-    <div>
-      <h1>hello</h1>
-    </div>
+    <>
+      <AppHead title="Myanmar Developer Community" />
+      <div className="container mx-auto"></div>
+    </>
   );
 };
 
