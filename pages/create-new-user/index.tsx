@@ -1,13 +1,15 @@
 import AppHead from "@/components/AppHead";
 import SimpleForm from "@/components/form/SimpleForm";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 //third party library
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Button from "@/components/form/Button";
+import LoginForm from "@/components/form/LoginForm";
 
 //schema
 const schema = yup.object().shape({
@@ -24,6 +26,7 @@ const schema = yup.object().shape({
 });
 
 const CreateNewUser = () => {
+  const [login, setLogin] = useState(false);
   const router = useRouter();
 
   const {
@@ -45,6 +48,14 @@ const CreateNewUser = () => {
     console.log(formData.get("userName"));
   };
 
+  useEffect(() => {
+    if (router.pathname === "/login") {
+      setLogin(true);
+    } else {
+      setLogin(false);
+    }
+  }, [router.pathname]);
+
   return (
     <>
       <AppHead title="Welcome to Myanmar Dev Comminity 👩&zwj;💻👨&zwj;💻" />
@@ -53,10 +64,11 @@ const CreateNewUser = () => {
           Welcome to Myanmar Dev Comminity 👩&zwj;💻👨&zwj;💻
         </h1>
         <p className="text-md text-gray-500">
-          Myanmar Dev Community is community of amzaing developers
+          Myanmar Dev Community 👩&zwj;💻👨&zwj;💻 is community of amzaing
+          developers
         </p>
         <form
-          className="grid grid-cols-2 mt-12 gap-4"
+          className="w-full grid grid-cols-2 gap-6 mt-6"
           onSubmit={handleSubmit(onSubmit)}
         >
           <SimpleForm
@@ -92,7 +104,7 @@ const CreateNewUser = () => {
             label="Password"
             type="password"
           />
-          <div className="w-full flex space-x-1 md:w-72 mt-4">
+          <div className="w-full flex space-x-1 md:w-62 mt-4">
             <Button
               disable={false}
               arialLabel="cancelling of creating new user"
@@ -110,6 +122,33 @@ const CreateNewUser = () => {
             />
           </div>
         </form>
+
+        <div className="mt-10 flex w-full justify-between items-center">
+          {!login && (
+            <>
+              <div className="border-t-2 border-x-0 border-b-0 w-[180px] border  "></div>
+              <span className="text-gray-600">
+                Already have an account?{" "}
+                <Link href="/login">
+                  <a className="text-blue-400 cursor-pointer">Log in</a>
+                </Link>
+                .
+              </span>
+              <div className="border-t-2 border-x-0 border-b-0 w-[180px] border "></div>
+            </>
+          )}
+          {login && login && (
+            <>
+              <div className="border-t-2 border-x-0 border-b-0 w-[110px] border  "></div>
+              <span className="text-gray-600">
+                Have a password? Continue with your email address
+              </span>
+              <div className="border-t-2 border-x-0 border-b-0 w-[110px] border "></div>
+            </>
+          )}
+        </div>
+
+        {login && <LoginForm />}
       </div>
     </>
   );

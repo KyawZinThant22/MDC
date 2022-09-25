@@ -18,7 +18,7 @@ const SimpleForm: React.FC<InputProps> = ({
   placeholder,
 }) => {
   return (
-    <div>
+    <div className="w-full ">
       <label htmlFor={label} className="block text-sm text-gray-900">
         <label htmlFor={label}>
           {label}

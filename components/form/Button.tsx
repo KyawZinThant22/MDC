@@ -20,7 +20,7 @@ const Button: React.FC<buttonProps> = ({
       aria-label={arialLabel}
       type={type}
       disabled={disable}
-      className={`w-full text-md h-10 px-5 hover:delay-75 font-semibold rounded-md  ${
+      className={`w-full text-md h-10 px-3 hover:delay-75 font-semibold rounded-md  ${
         variant === "primary" && "bg-primary text-white hover:bg-blue-800"
       }
       ${variant === "secondary" && "bg-secondary text-gray-900"}`}

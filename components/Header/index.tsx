@@ -15,13 +15,15 @@ const Header = () => {
           </form>
         </div>
         <nav className="flex items-center gap-3 text-lg">
-          <button
-            type="button"
-            aria-label="log in button"
-            className="hover:bg-blue-50 p-2 rounded-md px-4 hover:text-blue-600 hover:underline"
-          >
-            Log in
-          </button>
+          <Link href="/login">
+            <button
+              type="button"
+              aria-label="log in button"
+              className="hover:bg-blue-50 p-2 rounded-md px-4 hover:text-blue-600 hover:underline"
+            >
+              Log in
+            </button>
+          </Link>
           <Link href="/create-new-user">
             <button
               type="button"
