@@ -6,6 +6,8 @@ import SimpleForm from "./SimpleForm";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useRouter } from "next/router";
+import AdminApi from "../../api/Adminapi";
 
 const schema = yup.object().shape({
   email: yup
@@ -20,20 +22,43 @@ const schema = yup.object().shape({
 });
 
 const LoginForm = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const formData = new FormData();
     formData.append("emal", data.email);
     formData.append("password", data.password);
 
-    // console.log(formData.get("userName"));
+    const res = await AdminApi.createNewUser(formData);
+    console.log(res);
+    // if (res.status === 201 && res.data.meta.success === true) {
+    //   router.push("/");
+    //   // dispatch(
+    //   //   openAlert({
+    //   //     title: "Success",
+    //   //     type: "success",
+    //   //     desc: res.data.meta.message,
+    //   //   })
+    //   // );
+    //   reset();
+    // } else {
+    //   // dispatch(
+    //   //   openAlert({
+    //   //     title: "Error",
+    //   //     type: "error",
+    //   //     desc: res.data.meta.message,
+    //   //   })
+    //   // );
+    //   console.log("err");
+    // }
   };
 
   return (

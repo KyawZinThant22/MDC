@@ -10,6 +10,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Button from "@/components/form/Button";
 import LoginForm from "@/components/form/LoginForm";
+import AdminApi, { URL } from "../../api/Adminapi";
+import axios from "axios";
 
 //schema
 const schema = yup.object().shape({
@@ -39,13 +41,35 @@ const CreateNewUser = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: any) => {
+  const requestHeaders = {
+    "Content-Type":
+      "multipart/form-data; boundary=<calculated when request is sent>; application/json; charset=UTF-8",
+    Accept: "application/json",
+  };
+
+  const onSubmit = async (data: any) => {
     const formData = new FormData();
     formData.append("userName", data.userName);
-    formData.append("emal", data.email);
+    formData.append("email", data.email);
     formData.append("password", data.password);
+    formData.append("image", data.img);
 
-    console.log(formData.get("userName"));
+    try {
+      const res = await fetch(`http://localhost:8000/api/v1/user/signup/`, {
+        method: "POST",
+        body: formData,
+        headers: { ...requestHeaders },
+      });
+      const data = await res.json();
+      if (data.status === "success") {
+        router.push("/");
+        reset();
+      } else {
+        console.log("err");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -89,11 +113,11 @@ const CreateNewUser = () => {
             type="email"
           />
           <SimpleForm
-            register={register("email")}
-            placeholder="Email"
+            register={register("image")}
+            placeholder="Profile"
             required={true}
             errors={errors.email?.message}
-            label="Email"
+            label="image"
             type="text"
           />
           <SimpleForm
