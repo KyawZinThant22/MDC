@@ -3,6 +3,7 @@ import SimpleForm from "@/components/form/SimpleForm";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { loginAuth, logout } from "../../redux/features/auth";
 
 //third party library
 import { useForm } from "react-hook-form";
@@ -10,8 +11,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Button from "@/components/form/Button";
 import LoginForm from "@/components/form/LoginForm";
-import AdminApi, { URL } from "../../api/Adminapi";
-import axios from "axios";
+import { useSignup } from "../../hooks/useSignIn";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import jwt_decode from "jwt-decode";
+import { useAppDispatch } from "../../redux/hooks";
 
 //schema
 const schema = yup.object().shape({
@@ -25,50 +29,51 @@ const schema = yup.object().shape({
     .required("Password is required")
     .min(8, "Password is too short - should be 8 chars minimum.")
     .max(32, "Password is too long - should be 32 chars maximum."),
+  passwordConfirm: yup
+    .string()
+    .required("Password confrimation is required")
+    .oneOf([yup.ref("password"), null], "Password must match"),
 });
 
 const CreateNewUser = () => {
   const [login, setLogin] = useState(false);
   const router = useRouter();
+  const { signup, isLoading } = useSignup();
+  const dispatch = useAppDispatch();
 
   const {
     register,
     handleSubmit,
-    setError,
     reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
-
-  const requestHeaders = {
-    "Content-Type":
-      "multipart/form-data; boundary=<calculated when request is sent>; application/json; charset=UTF-8",
-    Accept: "application/json",
-  };
-
   const onSubmit = async (data: any) => {
-    const formData = new FormData();
-    formData.append("userName", data.userName);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("image", data.img);
+    const { userName, email, password } = data;
+    let datas = { userName, email, password };
+    const res = await signup(datas);
 
-    try {
-      const res = await fetch(`http://localhost:8000/api/v1/user/signup/`, {
-        method: "POST",
-        body: formData,
-        headers: { ...requestHeaders },
+    if (res.status === "success") {
+      toast.success("Successfully Created Your Account", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
       });
-      const data = await res.json();
-      if (data.status === "success") {
-        router.push("/");
-        reset();
-      } else {
-        console.log("err");
-      }
-    } catch (err) {
-      console.log(err);
+
+      const token = res.token;
+      Cookies.set("_access_token_react", token as any);
+      const { email, userName, _id: id } = res.data;
+      const payload = { token, email, userName, id };
+      dispatch(loginAuth(payload));
+      reset();
+      router.push("/");
+    } else if (res.status === "fail") {
+      alert(res.message);
     }
   };
 
@@ -113,19 +118,19 @@ const CreateNewUser = () => {
             type="email"
           />
           <SimpleForm
-            register={register("image")}
-            placeholder="Profile"
-            required={true}
-            errors={errors.email?.message}
-            label="image"
-            type="text"
-          />
-          <SimpleForm
             register={register("password")}
-            placeholder="Password"
+            placeholder="password"
             required={true}
             errors={errors.password?.message}
-            label="Password"
+            label="new-passsword"
+            type="password"
+          />
+          <SimpleForm
+            register={register("passwordConfirm")}
+            placeholder="Confirm Password"
+            required={true}
+            errors={errors.passwordConfirm?.message}
+            label="Confirm Password"
             type="password"
           />
           <div className="w-full flex space-x-1 md:w-62 mt-4">
@@ -141,8 +146,9 @@ const CreateNewUser = () => {
               disable={false}
               arialLabel="Create New User"
               type={"submit"}
+              isLoading={isLoading}
               variant={"primary"}
-              label={"Sign Up"}
+              label={"Create Account"}
             />
           </div>
         </form>

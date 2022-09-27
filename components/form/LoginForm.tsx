@@ -37,8 +37,8 @@ const LoginForm = () => {
     formData.append("emal", data.email);
     formData.append("password", data.password);
 
-    const res = await AdminApi.createNewUser(formData);
-    console.log(res);
+    // const res = await AdminApi.createNewUser(formData);
+    // console.log(res);
     // if (res.status === 201 && res.data.meta.success === true) {
     //   router.push("/");
     //   // dispatch(

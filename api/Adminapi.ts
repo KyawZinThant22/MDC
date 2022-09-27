@@ -12,19 +12,26 @@ const requestHeaders = {
 //API
 const apiSetting = {
   createNewUser: async (data: any) => {
-    const resWithAxios = await axios({
-      url: `${URL}/user/signup`,
+    const response = await fetch(`${URL}user/singup`, {
       method: "POST",
-      headers: { ...requestHeaders },
-      data,
-    })
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-    return resWithAxios;
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const json = await response.json();
+    if (!json.ok) {
+      console.log("err");
+      //   setIsLoading(false)
+      //   setError(json.error)
+    }
+    if (json.ok) {
+      console.log("success");
+
+      // update the auth context
+
+      // update loading state
+      //   setIsLoading(false)
+    }
+    return json;
   },
 };
 

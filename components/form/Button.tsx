@@ -5,6 +5,7 @@ interface buttonProps {
   label: string;
   action?: () => void;
   disable: boolean;
+  isLoading?: boolean;
 }
 
 const Button: React.FC<buttonProps> = ({
@@ -14,6 +15,7 @@ const Button: React.FC<buttonProps> = ({
   label,
   action,
   disable,
+  isLoading,
 }) => {
   return (
     <button
@@ -26,7 +28,7 @@ const Button: React.FC<buttonProps> = ({
       ${variant === "secondary" && "bg-secondary text-gray-900"}`}
       onClick={action}
     >
-      {label}
+      {isLoading ? "Creating" : label}
     </button>
   );
 };

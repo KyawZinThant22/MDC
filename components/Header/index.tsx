@@ -1,7 +1,11 @@
 import { FiSearch } from "react-icons/fi";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const Header = () => {
+  const authData = useSelector((state: RootState) => state.auth.value);
+  console.log(authData);
   return (
     <nav className=" w-full headerShadow py-3">
       <div className=" container mx-auto flex justify-between items-center">
