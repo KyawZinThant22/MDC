@@ -29,7 +29,13 @@ export const registerUser = createAsyncThunk(
   `${URL}user/singup/`,
   async (user: any, thunkAPI) => {
     try {
-      return await AdminApi.registerUser(user);
+      const res = await AdminApi.registerUser(user);
+      if (res.status === "fail") {
+        throw new Error(res.message);
+      }
+      if (res.status === "success") {
+        Cookies.set("_access_token_react", res.token as any);
+      }
     } catch (error: any) {
       const message =
         (error.response &&
@@ -41,6 +47,31 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
+
+//Register User
+export const Login = createAsyncThunk(`Login`, async (user: any, thunkAPI) => {
+  try {
+    const res = await AdminApi.LogIn(user);
+    if (res.status === "fail") {
+      throw new Error(res.message);
+    }
+    if (res.status === "success") {
+      Cookies.set("_access_token_react", res.token as any);
+    }
+  } catch (error: any) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
+//logout user
+
+export const Logout = createAsyncThunk(`logout`, async () => {
+  Cookies.remove("_access_token_react");
+});
 
 export const authSlice = createSlice({
   name: "auth",
@@ -65,27 +96,67 @@ export const authSlice = createSlice({
       })
       .addCase(
         registerUser.fulfilled,
-        (state: IAuthState, actions: PayloadAction<any>) => {
+        (state: IAuthState, action: PayloadAction<any>) => {
+          console.log(action.payload);
           state.value = {
             ...state.value,
             isLoading: false,
             isSuccess: true,
-            user: actions.payload,
+            isError: false,
+            user: action.payload,
           };
         }
       )
       .addCase(
         registerUser.rejected,
-        (state: IAuthState, actions: PayloadAction<any>) => {
+        (state: IAuthState, action: PayloadAction<any>) => {
           state.value = {
             ...state.value,
             isLoading: false,
+            isError: true,
             isSuccess: false,
-            message: actions.payload,
+            message: action.payload,
             user: null,
           };
         }
-      );
+      )
+      .addCase(Login.pending, (state: IAuthState) => {
+        state.value = {
+          ...state.value,
+          isLoading: true,
+        };
+      })
+      .addCase(
+        Login.fulfilled,
+        (state: IAuthState, action: PayloadAction<any>) => {
+          state.value = {
+            ...state.value,
+            isLoading: false,
+            isSuccess: true,
+            isError: false,
+            user: action.payload,
+          };
+        }
+      )
+      .addCase(
+        Login.rejected,
+        (state: IAuthState, action: PayloadAction<any>) => {
+          state.value = {
+            ...state.value,
+            isLoading: false,
+            isError: true,
+            isSuccess: false,
+            message: action.payload,
+            user: null,
+          };
+        }
+      )
+      .addCase(Logout.fulfilled, (state: IAuthState) => {
+        state.value = {
+          ...state.value,
+          user: null,
+        };
+      });
   },
 });
 

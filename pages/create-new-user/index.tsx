@@ -10,10 +10,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Button from "@/components/form/Button";
 import LoginForm from "@/components/form/LoginForm";
-import { useSignup } from "../../hooks/useSignIn";
-import Cookies from "js-cookie";
+
 import { toast } from "react-toastify";
-import jwt_decode from "jwt-decode";
+
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 import { registerUser, resetData } from "../../redux/features/auth";
@@ -22,8 +21,7 @@ import { registerUser, resetData } from "../../redux/features/auth";
 import { BsFillPersonFill } from "react-icons/bs";
 import { HiOutlineMail } from "react-icons/hi";
 import { HiLockClosed } from "react-icons/hi";
-import { AiOutlineFileJpg } from "react-icons/ai";
-import { useSelector } from "react-redux";
+import Cookies from "js-cookie";
 
 //schema
 const schema = yup.object().shape({
@@ -43,23 +41,12 @@ const schema = yup.object().shape({
     .oneOf([yup.ref("password"), null], "Password must match"),
 });
 
-// toast.success("Successfully Created Your Account", {
-//   position: "top-right",
-//   autoClose: 5000,
-//   hideProgressBar: false,
-//   closeOnClick: true,
-//   pauseOnHover: true,
-//   draggable: true,
-//   progress: undefined,
-// });
 // Cookies.set("_access_token_react", token as any);
 
 const CreateNewUser = () => {
   const authData = useAppSelector((state) => state.auth.value);
   const { user, isLoading, isError, isSuccess, message } = authData;
-  // const { user, isLoading, isError, isSuccess, message } = useSelector(
-  //   (state: any) => state.auth
-  // );
+  console.log(authData);
 
   const [login, setLogin] = useState(false);
   const router = useRouter();
@@ -74,11 +61,10 @@ const CreateNewUser = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
     const { userName, email, password } = data;
     let datas = { userName, email, password };
-    dispatch(registerUser(datas));
-    console.log(authData);
+    await dispatch(registerUser(datas));
   };
 
   useEffect(() => {
@@ -88,6 +74,15 @@ const CreateNewUser = () => {
     }
 
     if (isSuccess || user) {
+      toast.success("Successfully Created Your Account", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       router.push("/");
     }
 

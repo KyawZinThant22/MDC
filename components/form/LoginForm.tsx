@@ -2,6 +2,7 @@ import Link from "next/link";
 import React from "react";
 import Button from "./Button";
 import SimpleForm from "./SimpleForm";
+import { useEffect } from "react";
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,9 +10,14 @@ import * as yup from "yup";
 import { useRouter } from "next/router";
 import AdminApi from "../../api/Adminapi";
 
+import { toast } from "react-toastify";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { Login, registerUser, resetData } from "../../redux/features/auth";
+
 //icons
 import { BsFillPersonFill } from "react-icons/bs";
 import { HiOutlineMail } from "react-icons/hi";
+import Cookies from "js-cookie";
 
 const schema = yup.object().shape({
   email: yup
@@ -27,6 +33,11 @@ const schema = yup.object().shape({
 
 const LoginForm = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const authData = useAppSelector((state) => state.auth.value);
+  const { user, isLoading, isError, isSuccess, message } = authData;
+  console.log(user);
+
   const {
     register,
     handleSubmit,
@@ -37,33 +48,33 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: any) => {
-    const formData = new FormData();
-    formData.append("emal", data.email);
-    formData.append("password", data.password);
-
-    // const res = await AdminApi.createNewUser(formData);
-    // console.log(res);
-    // if (res.status === 201 && res.data.meta.success === true) {
-    //   router.push("/");
-    //   // dispatch(
-    //   //   openAlert({
-    //   //     title: "Success",
-    //   //     type: "success",
-    //   //     desc: res.data.meta.message,
-    //   //   })
-    //   // );
-    //   reset();
-    // } else {
-    //   // dispatch(
-    //   //   openAlert({
-    //   //     title: "Error",
-    //   //     type: "error",
-    //   //     desc: res.data.meta.message,
-    //   //   })
-    //   // );
-    //   console.log("err");
-    // }
+    const { email, password } = data;
+    let datas = { email, password };
+    dispatch(Login(datas));
   };
+
+  useEffect(() => {
+    console.log("hi");
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess || user) {
+      Cookies.set("_access_token_react", user as any);
+      toast.success("Successfully Login", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      router.push("/");
+    }
+
+    dispatch(resetData());
+  }, [user, isError, isSuccess, message, router, dispatch]);
 
   return (
     <form
@@ -103,6 +114,7 @@ const LoginForm = () => {
           disable={false}
           arialLabel="Logging in"
           type={"submit"}
+          isLoading={isLoading}
           variant={"primary"}
           label={"Login"}
         />
