@@ -17,6 +17,11 @@ import { toast } from "react-toastify";
 import jwt_decode from "jwt-decode";
 import { useAppDispatch } from "../../redux/hooks";
 
+//icons
+import { BsFillPersonFill } from "react-icons/bs";
+import { HiOutlineMail } from "react-icons/hi";
+import { HiLockClosed } from "react-icons/hi";
+
 //schema
 const schema = yup.object().shape({
   userName: yup.string().required("UserName is required"),
@@ -102,20 +107,32 @@ const CreateNewUser = () => {
         >
           <SimpleForm
             register={register("userName")}
-            placeholder="UserName"
+            placeholder="username"
             required={true}
             errors={errors.userName?.message}
             label="Username"
             type="text"
+            icon={
+              <BsFillPersonFill
+                size={20}
+                className="w-4 h-4  absolute top-3 left-2"
+              />
+            }
           />
 
           <SimpleForm
             register={register("email")}
-            placeholder="Email"
+            placeholder="email"
             required={true}
             errors={errors.email?.message}
             label="email"
             type="email"
+            icon={
+              <HiOutlineMail
+                size={20}
+                className="w-4 h-4  absolute top-3 left-2"
+              />
+            }
           />
           <SimpleForm
             register={register("password")}
@@ -124,23 +141,35 @@ const CreateNewUser = () => {
             errors={errors.password?.message}
             label="new-passsword"
             type="password"
+            icon={
+              <HiLockClosed
+                size={20}
+                className="w-4 h-4  absolute top-3 left-2"
+              />
+            }
           />
           <SimpleForm
             register={register("passwordConfirm")}
-            placeholder="Confirm Password"
+            placeholder="confirm password"
             required={true}
             errors={errors.passwordConfirm?.message}
             label="Confirm Password"
             type="password"
+            icon={
+              <HiLockClosed
+                size={20}
+                className="w-4 h-4  absolute top-3 left-2"
+              />
+            }
           />
-          <div className="w-full flex space-x-1 md:w-62 mt-4">
+          <div className="w-full flex space-x-1 md:w-62 ">
             <Button
               disable={false}
               arialLabel="cancelling of creating new user"
               type={"button"}
               variant={"secondary"}
               label={"Cancel"}
-              action={() => router.replace("/")}
+              action={() => reset()}
             />
             <Button
               disable={false}
