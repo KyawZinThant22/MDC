@@ -3,7 +3,6 @@ import SimpleForm from "@/components/form/SimpleForm";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { loginAuth, logout } from "../../redux/features/auth";
 
 //third party library
 import { useForm } from "react-hook-form";
@@ -74,7 +73,7 @@ const CreateNewUser = () => {
       Cookies.set("_access_token_react", token as any);
       const { email, userName, _id: id } = res.data;
       const payload = { token, email, userName, id };
-      dispatch(loginAuth(payload));
+      // dispatch(loginAuth(payload));
       reset();
       router.push("/");
     } else if (res.status === "fail") {

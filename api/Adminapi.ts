@@ -11,27 +11,13 @@ const requestHeaders = {
 
 //API
 const apiSetting = {
-  createNewUser: async (data: any) => {
-    const response = await fetch(`${URL}user/singup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    const json = await response.json();
-    if (!json.ok) {
-      console.log("err");
-      //   setIsLoading(false)
-      //   setError(json.error)
-    }
-    if (json.ok) {
-      console.log("success");
+  registerUser: async (data: any) => {
+    const response = await axios(`${URL}user/singup`, data);
 
-      // update the auth context
-
-      // update loading state
-      //   setIsLoading(false)
+    if (response.data) {
+      localStorage.setItem("user", JSON.stringify(response.data));
     }
-    return json;
+    return response.data;
   },
 };
 

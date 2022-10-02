@@ -9,6 +9,10 @@ import * as yup from "yup";
 import { useRouter } from "next/router";
 import AdminApi from "../../api/Adminapi";
 
+//icons
+import { BsFillPersonFill } from "react-icons/bs";
+import { HiOutlineMail } from "react-icons/hi";
+
 const schema = yup.object().shape({
   email: yup
     .string()
@@ -68,19 +72,31 @@ const LoginForm = () => {
     >
       <SimpleForm
         register={register("email")}
-        placeholder="Email"
+        placeholder="email"
         required={true}
         errors={errors.email?.message}
         label="email"
         type="email"
+        icon={
+          <BsFillPersonFill
+            size={20}
+            className="w-4 h-4  absolute top-3 left-2"
+          />
+        }
       />
       <SimpleForm
         register={register("password")}
-        placeholder="Password"
+        placeholder="password"
         required={true}
         errors={errors.password?.message}
         label="Password"
         type="password"
+        icon={
+          <BsFillPersonFill
+            size={20}
+            className="w-4 h-4  absolute top-3 left-2"
+          />
+        }
       />
       <div className="w-full flex space-x-1 md:w-62 mt-4">
         <Button
