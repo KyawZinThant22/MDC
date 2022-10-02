@@ -12,12 +12,14 @@ const requestHeaders = {
 //API
 const apiSetting = {
   registerUser: async (data: any) => {
-    const response = await axios(`${URL}user/singup`, data);
-
-    if (response.data) {
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
-    return response.data;
+    const response = await fetch("http://localhost:8000/api/v1/user/signup/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const json = await response.json();
+    console.log(json);
+    return json;
   },
 };
 

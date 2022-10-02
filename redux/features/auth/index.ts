@@ -4,7 +4,7 @@ import AdminApi from "../../../api/Adminapi";
 
 interface IAuthState {
   value: {
-    token?: string | null;
+    user: any | null;
     isLoading: boolean;
     isError: boolean;
     isSuccess: boolean;
@@ -13,23 +13,23 @@ interface IAuthState {
 }
 
 let token = Cookies.get("_access_token_react");
+
 const initialState: IAuthState = {
   value: {
     isLoading: false,
     isError: false,
     isSuccess: false,
     message: "",
-    token: token ? token : null,
+    user: token ? token : null,
   },
 };
 
 //Register User
-
-export const register = createAsyncThunk(
-  `${URL}user/singup`,
-  async (token, thunkAPI) => {
+export const registerUser = createAsyncThunk(
+  `${URL}user/singup/`,
+  async (user: any, thunkAPI) => {
     try {
-      return await AdminApi.registerUser(token);
+      return await AdminApi.registerUser(user);
     } catch (error: any) {
       const message =
         (error.response &&
@@ -46,48 +46,48 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    reset: (state) => {
+    resetData: (state) => {
       state.value = {
+        ...state.value,
         isLoading: false,
         isError: false,
         isSuccess: false,
-        message: "",
       };
     },
-    extraReducers: (builder: any) => {
-      builder
-        .addCase(register.pending, (state: IAuthState) => {
+  },
+  extraReducers: (builder: any) => {
+    builder
+      .addCase(registerUser.pending, (state: IAuthState) => {
+        state.value = {
+          ...state.value,
+          isLoading: true,
+        };
+      })
+      .addCase(
+        registerUser.fulfilled,
+        (state: IAuthState, actions: PayloadAction<any>) => {
           state.value = {
             ...state.value,
-            isLoading: true,
+            isLoading: false,
+            isSuccess: true,
+            user: actions.payload,
           };
-        })
-        .addCase(
-          register.fulfilled,
-          (state: IAuthState, actions: PayloadAction<any>) => {
-            state.value = {
-              ...state.value,
-              isLoading: true,
-              isSuccess: true,
-              token: actions.payload,
-            };
-          }
-        )
-        .addCase(
-          register.rejected,
-          (state: IAuthState, actions: PayloadAction<any>) => {
-            state.value = {
-              ...state.value,
-              isLoading: false,
-              isSuccess: false,
-              message: actions.payload,
-              token: null,
-            };
-          }
-        );
-    },
+        }
+      )
+      .addCase(
+        registerUser.rejected,
+        (state: IAuthState, actions: PayloadAction<any>) => {
+          state.value = {
+            ...state.value,
+            isLoading: false,
+            isSuccess: false,
+            message: actions.payload,
+            user: null,
+          };
+        }
+      );
   },
 });
 
-export const { reset } = authSlice.actions;
+export const { resetData } = authSlice.actions;
 export default authSlice.reducer;

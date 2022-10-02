@@ -14,12 +14,16 @@ import { useSignup } from "../../hooks/useSignIn";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 import jwt_decode from "jwt-decode";
-import { useAppDispatch } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+
+import { registerUser, resetData } from "../../redux/features/auth";
 
 //icons
 import { BsFillPersonFill } from "react-icons/bs";
 import { HiOutlineMail } from "react-icons/hi";
 import { HiLockClosed } from "react-icons/hi";
+import { AiOutlineFileJpg } from "react-icons/ai";
+import { useSelector } from "react-redux";
 
 //schema
 const schema = yup.object().shape({
@@ -39,10 +43,26 @@ const schema = yup.object().shape({
     .oneOf([yup.ref("password"), null], "Password must match"),
 });
 
+// toast.success("Successfully Created Your Account", {
+//   position: "top-right",
+//   autoClose: 5000,
+//   hideProgressBar: false,
+//   closeOnClick: true,
+//   pauseOnHover: true,
+//   draggable: true,
+//   progress: undefined,
+// });
+// Cookies.set("_access_token_react", token as any);
+
 const CreateNewUser = () => {
+  const authData = useAppSelector((state) => state.auth.value);
+  const { user, isLoading, isError, isSuccess, message } = authData;
+  // const { user, isLoading, isError, isSuccess, message } = useSelector(
+  //   (state: any) => state.auth
+  // );
+
   const [login, setLogin] = useState(false);
   const router = useRouter();
-  const { signup, isLoading } = useSignup();
   const dispatch = useAppDispatch();
 
   const {
@@ -53,33 +73,26 @@ const CreateNewUser = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const onSubmit = async (data: any) => {
+
+  const onSubmit = (data: any) => {
     const { userName, email, password } = data;
     let datas = { userName, email, password };
-    const res = await signup(datas);
-
-    if (res.status === "success") {
-      toast.success("Successfully Created Your Account", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-
-      const token = res.token;
-      Cookies.set("_access_token_react", token as any);
-      const { email, userName, _id: id } = res.data;
-      const payload = { token, email, userName, id };
-      // dispatch(loginAuth(payload));
-      reset();
-      router.push("/");
-    } else if (res.status === "fail") {
-      alert(res.message);
-    }
+    dispatch(registerUser(datas));
+    console.log(authData);
   };
+
+  useEffect(() => {
+    console.log("hi");
+    if (isError) {
+      toast.error(message);
+    }
+
+    if (isSuccess || user) {
+      router.push("/");
+    }
+
+    dispatch(resetData());
+  }, [user, isError, isSuccess, message, router, dispatch]);
 
   useEffect(() => {
     if (router.pathname === "/login") {
