@@ -32,6 +32,20 @@ const apiSetting = {
     console.log(json);
     return json;
   },
+
+  getMe: async (token: any) => {
+    console.log(token);
+    const response = await fetch(`${URL}user/me`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    const json = await response.json();
+    return json;
+  },
 };
 
 export default apiSetting;

@@ -65,28 +65,32 @@ const CreateNewUser = () => {
     const { userName, email, password } = data;
     let datas = { userName, email, password };
     await dispatch(registerUser(datas));
+    // console.log(authData);
   };
 
   useEffect(() => {
-    console.log("hi");
-    if (isError) {
-      toast.error(message);
-    }
+    if (router.pathname === "/create-new-user") {
+      console.log("hi");
+      if (isError) {
+        toast.error(message);
+      }
 
-    if (isSuccess || user) {
-      toast.success("Successfully Created Your Account", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      router.push("/");
-    }
+      if (isSuccess || user) {
+        Cookies.set("_access_token_react", user.token as any);
+        toast.success("Successfully Created Your Account", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        router.push("/");
+      }
 
-    dispatch(resetData());
+      dispatch(resetData());
+    }
   }, [user, isError, isSuccess, message, router, dispatch]);
 
   useEffect(() => {

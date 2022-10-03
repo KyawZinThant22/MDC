@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
+import { useEffect } from "react";
 import AdminApi from "../../../api/Adminapi";
 
 interface IAuthState {
@@ -12,30 +13,30 @@ interface IAuthState {
   };
 }
 
-let token = Cookies.get("_access_token_react");
-
 const initialState: IAuthState = {
   value: {
     isLoading: false,
     isError: false,
     isSuccess: false,
     message: "",
-    user: token ? token : null,
+    user: null,
   },
 };
 
 //Register User
 export const registerUser = createAsyncThunk(
-  `${URL}user/singup/`,
+  `create`,
   async (user: any, thunkAPI) => {
     try {
       const res = await AdminApi.registerUser(user);
+      console.log(res);
       if (res.status === "fail") {
         throw new Error(res.message);
       }
       if (res.status === "success") {
         Cookies.set("_access_token_react", res.token as any);
       }
+      return res;
     } catch (error: any) {
       const message =
         (error.response &&
@@ -58,6 +59,7 @@ export const Login = createAsyncThunk(`Login`, async (user: any, thunkAPI) => {
     if (res.status === "success") {
       Cookies.set("_access_token_react", res.token as any);
     }
+    return res;
   } catch (error: any) {
     const message =
       (error.response && error.response.data && error.response.data.message) ||
@@ -83,6 +85,13 @@ export const authSlice = createSlice({
         isLoading: false,
         isError: false,
         isSuccess: false,
+      };
+    },
+    validateAuth: (state, action: PayloadAction<any>) => {
+      state.value = {
+        ...state.value,
+        isSuccess: true,
+        user: action.payload,
       };
     },
   },
@@ -129,6 +138,7 @@ export const authSlice = createSlice({
       .addCase(
         Login.fulfilled,
         (state: IAuthState, action: PayloadAction<any>) => {
+          console.log(action.payload);
           state.value = {
             ...state.value,
             isLoading: false,
@@ -160,5 +170,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { resetData } = authSlice.actions;
+export const { resetData, validateAuth } = authSlice.actions;
 export default authSlice.reducer;

@@ -8,6 +8,10 @@ import { useRouter } from "next/router";
 
 const Header = () => {
   const { user } = useAppSelector((state) => state.auth.value);
+  const userData = useAppSelector((state) => state.user.value);
+  const { email, userName }: any = userData.user;
+  const authData = useAppSelector((state) => state.auth.value);
+  console.log(authData);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -31,6 +35,7 @@ const Header = () => {
         <nav className="flex items-center gap-3 text-lg">
           {user ? (
             <>
+              <p>{userName}</p>
               <button
                 type="button"
                 aria-label="create account button"

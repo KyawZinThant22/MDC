@@ -12,11 +12,10 @@ import AdminApi from "../../api/Adminapi";
 
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { Login, registerUser, resetData } from "../../redux/features/auth";
+import { Login, resetData } from "../../redux/features/auth";
 
 //icons
 import { BsFillPersonFill } from "react-icons/bs";
-import { HiOutlineMail } from "react-icons/hi";
 import Cookies from "js-cookie";
 
 const schema = yup.object().shape({
@@ -36,7 +35,6 @@ const LoginForm = () => {
   const dispatch = useAppDispatch();
   const authData = useAppSelector((state) => state.auth.value);
   const { user, isLoading, isError, isSuccess, message } = authData;
-  console.log(user);
 
   const {
     register,
@@ -54,26 +52,29 @@ const LoginForm = () => {
   };
 
   useEffect(() => {
-    console.log("hi");
-    if (isError) {
-      toast.error(message);
-    }
+    if (router.pathname === "/login") {
+      console.log("hi");
+      if (isError) {
+        toast.error(message);
+      }
 
-    if (isSuccess || user) {
-      Cookies.set("_access_token_react", user as any);
-      toast.success("Successfully Login", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      router.push("/");
-    }
+      if (isSuccess || user) {
+        console.log("render");
+        Cookies.set("_access_token_react", user.token as any);
+        toast.success("Successfully Login", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        router.push("/");
+      }
 
-    dispatch(resetData());
+      dispatch(resetData());
+    }
   }, [user, isError, isSuccess, message, router, dispatch]);
 
   return (
