@@ -34,7 +34,6 @@ const apiSetting = {
   },
 
   getMe: async (token: any) => {
-    console.log(token);
     const response = await fetch(`${URL}user/me`, {
       method: "GET",
       headers: {
@@ -44,6 +43,7 @@ const apiSetting = {
       },
     });
     const json = await response.json();
+    console.log(json);
     return json;
   },
 };

@@ -1,18 +1,38 @@
 import { FiSearch } from "react-icons/fi";
 import Link from "next/link";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { Logout, resetData } from "../../redux/features/auth";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+
+import Popup from "reactjs-popup";
+
+//icons
+import { RiNotification3Line } from "react-icons/ri";
+
+const navLinks = [
+  {
+    title: "Dashboard",
+    route: "/",
+  },
+  {
+    title: "Create Post",
+    route: "/",
+  },
+  {
+    title: "Reading List",
+    route: "/",
+  },
+  {
+    title: "Setting",
+    route: "/",
+  },
+];
 
 const Header = () => {
   const { user } = useAppSelector((state) => state.auth.value);
 
   const userData = useAppSelector((state) => user && state.user.value);
 
-  // const { userName } = userData;
   const authData = useAppSelector((state) => state.auth.value);
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -46,14 +66,53 @@ const Header = () => {
               >
                 Create Post
               </button>
-              <button
-                onClick={onLogOut}
-                type="button"
-                aria-label="create account button"
-                className="border-red-600 p-2 text-red-600 rounded-md px-3 border hover:bg-red-500 hover:text-white"
-              >
-                Log Out
-              </button>
+
+              <div className="relative cursor-pointer">
+                <div className="w-4 text-white text-sm rounded-full bg-red-600 absolute left-4 text-center bottom-4">
+                  1
+                </div>
+                <RiNotification3Line size={30} />
+              </div>
+
+              <div className="tooltipBoundary relative">
+                <Popup
+                  trigger={
+                    <button type="button" className="button">
+                      <div>
+                        <div className="w-10 h-10 bg-green-400 rounded-full"></div>
+                      </div>
+                    </button>
+                  }
+                  position={["top center"]}
+                  closeOnDocumentClick
+                  keepTooltipInside=".tooltipBoundary"
+                >
+                  <div className="border-2 w-[18rem] absolute  top-3 -right-[50px] bg-white rounded-md  ">
+                    <div className=" space-y-0 px-6 py-2 pt-3 cursor-pointer m-2 rounded hover:bg-[#EBECFC] hover:first:underline">
+                      <p className="m-0">Kyaw Zin Thant</p>
+                      <p className="text-sm text-gray-500">@kyawzinthant22</p>
+                    </div>
+                    <hr className="mt-2" />
+                    <ul className="p-2 px-4 ">
+                      {navLinks.map((nav: any, idx: number) => (
+                        <li
+                          className="cursor-pointer p-2 text-lg hover:underline rounded hover:bg-[#EBECFC] "
+                          key={idx}
+                        >
+                          {nav.title}
+                        </li>
+                      ))}
+                    </ul>
+                    <hr className="mt-2" />
+                    <p
+                      className="px-6 p-2 pb-3 hover:underline rounded hover:bg-[#EBECFC] m-2 cursor-pointer"
+                      onClick={onLogOut}
+                    >
+                      Sign Out
+                    </p>
+                  </div>
+                </Popup>
+              </div>
             </>
           ) : (
             <>

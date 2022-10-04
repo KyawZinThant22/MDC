@@ -14,7 +14,7 @@ const Home: NextPage = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const authData = useAppSelector((state) => state.auth.value);
-
+  console.log(authData);
   useEffect(() => {
     const token = Cookies.get("_access_token_react");
     if (!token) {
@@ -23,23 +23,22 @@ const Home: NextPage = () => {
     if (token !== undefined) {
       dispatch(validateAuth(token));
     }
-  }, [dispatch]);
-
-  const validate = async () => {
-    if (authData.isSuccess || authData.user) {
-      try {
-        const res = await AdminApi.getMe(authData.user);
-        dispatch(userData(res));
-        console.log(res);
-      } catch (err: any) {
-        console.log(err.message);
-      }
-    }
-  };
+  }, [dispatch, router]);
 
   useEffect(() => {
+    const validate = async () => {
+      if (authData.isSuccess || authData.user) {
+        try {
+          const res = await AdminApi.getMe(authData.user);
+          dispatch(userData(res));
+          console.log(res);
+        } catch (err: any) {
+          console.log(err);
+        }
+      }
+    };
     validate();
-  }, []);
+  }, [authData.isSuccess, authData.user, dispatch]);
 
   return (
     <>
