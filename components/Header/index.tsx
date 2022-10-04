@@ -5,13 +5,15 @@ import { RootState } from "../../redux/store";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { Logout, resetData } from "../../redux/features/auth";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const Header = () => {
   const { user } = useAppSelector((state) => state.auth.value);
-  const userData = useAppSelector((state) => state.user.value);
-  const { email, userName }: any = userData.user;
+
+  const userData = useAppSelector((state) => user && state.user.value);
+
+  // const { userName } = userData;
   const authData = useAppSelector((state) => state.auth.value);
-  console.log(authData);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -20,6 +22,7 @@ const Header = () => {
     dispatch(resetData());
     router.push("/");
   };
+
   return (
     <nav className=" w-full headerShadow py-3">
       <div className=" container mx-auto flex justify-between items-center">
@@ -33,9 +36,9 @@ const Header = () => {
           </form>
         </div>
         <nav className="flex items-center gap-3 text-lg">
-          {user ? (
+          {authData.user ? (
             <>
-              <p>{userName}</p>
+              {/* <p>{userName}</p> */}
               <button
                 type="button"
                 aria-label="create account button"

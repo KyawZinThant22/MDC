@@ -65,18 +65,16 @@ const CreateNewUser = () => {
     const { userName, email, password } = data;
     let datas = { userName, email, password };
     await dispatch(registerUser(datas));
-    // console.log(authData);
   };
 
   useEffect(() => {
     if (router.pathname === "/create-new-user") {
-      console.log("hi");
-      if (isError) {
-        toast.error(message);
+      if (authData.isError) {
+        toast.error(authData.message);
       }
 
-      if (isSuccess || user) {
-        Cookies.set("_access_token_react", user.token as any);
+      if (authData.isSuccess || authData.user) {
+        Cookies.set("_access_token_react", authData.user?.token as any);
         toast.success("Successfully Created Your Account", {
           position: "top-right",
           autoClose: 5000,
@@ -91,7 +89,15 @@ const CreateNewUser = () => {
 
       dispatch(resetData());
     }
-  }, [user, isError, isSuccess, message, router, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    dispatch,
+    authData.user,
+    authData.isError,
+    authData.isSuccess,
+    authData.message,
+    authData.user?.token,
+  ]);
 
   useEffect(() => {
     if (router.pathname === "/login") {

@@ -138,7 +138,6 @@ export const authSlice = createSlice({
       .addCase(
         Login.fulfilled,
         (state: IAuthState, action: PayloadAction<any>) => {
-          console.log(action.payload);
           state.value = {
             ...state.value,
             isLoading: false,

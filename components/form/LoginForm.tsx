@@ -58,9 +58,9 @@ const LoginForm = () => {
         toast.error(message);
       }
 
-      if (isSuccess || user) {
+      if (authData.isSuccess || authData.user) {
         console.log("render");
-        Cookies.set("_access_token_react", user.token as any);
+        Cookies.set("_access_token_react", authData.user?.token as any);
         toast.success("Successfully Login", {
           position: "top-right",
           autoClose: 5000,
@@ -75,7 +75,16 @@ const LoginForm = () => {
 
       dispatch(resetData());
     }
-  }, [user, isError, isSuccess, message, router, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    user,
+    isError,
+    isSuccess,
+    message,
+    dispatch,
+    authData.isSuccess,
+    authData.user,
+  ]);
 
   return (
     <form
